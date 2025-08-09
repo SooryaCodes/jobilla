@@ -9,8 +9,8 @@ import {
   isSupabaseConfigured 
 } from '@/lib/supabase';
 
-// Fallback in-memory storage for development/fallback
-const portfolioStore = new Map();
+// Import shared portfolio store
+import { portfolioStore, getFromStore, setInStore, getStoreSize, getStoreKeys } from '@/lib/portfolioStore';
 
 export async function GET(
   request: NextRequest,
@@ -29,9 +29,14 @@ export async function GET(
     let profile;
 
     // Try Supabase first, fallback to in-memory store
+    console.log(`Fetching portfolio for username: "${username}"`);
+    console.log(`Supabase configured: ${isSupabaseConfigured()}`);
+    console.log(`Memory store has ${getStoreSize()} entries:`, getStoreKeys());
+    
     if (isSupabaseConfigured()) {
       const result = await getPortfolioProfile(username);
-      if (result.success) {
+      console.log('Supabase query result:', result);
+      if (result.success && result.data) {
         profile = {
           username: result.data.username,
           convertedResume: result.data.converted_resume,
@@ -40,13 +45,16 @@ export async function GET(
           createdAt: result.data.created_at,
           updatedAt: result.data.updated_at
         };
-      } else if (result.error !== 'Portfolio not found') {
-        console.error('Supabase error, falling back to memory store:', result.error);
-        profile = portfolioStore.get(username);
+      } else {
+        console.log('Supabase query failed or no data, falling back to memory store:', result.error);
+        profile = getFromStore(username);
       }
     } else {
-      profile = portfolioStore.get(username);
+      console.log('Using memory store fallback');
+      profile = getFromStore(username);
     }
+    
+    console.log('Found profile:', !!profile, profile ? 'has convertedResume: ' + !!profile.convertedResume : 'no profile');
 
     if (!profile) {
       return NextResponse.json(
@@ -58,11 +66,16 @@ export async function GET(
     return NextResponse.json(profile);
 
   } catch (error) {
-    console.error('Portfolio fetch error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch portfolio' },
-      { status: 500 }
-    );
+          console.error('Portfolio fetch error:', error);
+      console.error('Error details:', {
+        isSupabaseConfigured: isSupabaseConfigured(),
+        memoryStoreKeys: Array.from(portfolioStore.keys()),
+        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+      });
+      return NextResponse.json(
+        { error: 'Failed to fetch portfolio' },
+        { status: 500 }
+      );
   }
 }
 
@@ -83,7 +96,15 @@ export async function POST(
 
     const { convertedResume, roleKey, apiKey } = body;
 
+    console.log('Portfolio POST request body:', {
+      hasConvertedResume: !!convertedResume,
+      hasRoleKey: !!roleKey,
+      convertedResumeKeys: convertedResume ? Object.keys(convertedResume) : [],
+      roleKey
+    });
+
     if (!convertedResume || !roleKey) {
+      console.error('Missing required data:', { convertedResume: !!convertedResume, roleKey: !!roleKey });
       return NextResponse.json(
         { error: 'convertedResume and roleKey are required' },
         { status: 400 }
@@ -103,6 +124,9 @@ export async function POST(
     };
 
     // Try Supabase first, fallback to in-memory store
+    console.log(`Saving portfolio for username: "${username}"`);
+    console.log(`Supabase configured: ${isSupabaseConfigured()}`);
+    
     if (isSupabaseConfigured()) {
       const result = await savePortfolioProfile({
         username: username.toLowerCase(),
@@ -113,10 +137,13 @@ export async function POST(
 
       if (!result.success) {
         console.error('Supabase save failed, using memory store:', result.error);
-        portfolioStore.set(username, profile);
+        setInStore(username, profile);
+      } else {
+        console.log('Successfully saved to Supabase');
       }
     } else {
-      portfolioStore.set(username, profile);
+      console.log('Using memory store for save');
+      setInStore(username, profile);
     }
 
     return NextResponse.json({

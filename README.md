@@ -1,196 +1,135 @@
-# Resume Converter - Jobilla
+<img width="3188" height="1202" alt="frame (3)" src="https://github.com/user-attachments/assets/517ad8e9-ad22-457d-9538-a9e62d137cd7" />
 
-Transform your resume into humorous, theme-driven job profiles with AI-powered conversion and professional portfolio generation.
 
-## Features
+# Jobilla.com
 
-- **AI-Powered Resume Conversion**: Transform resumes into Kerala-themed professional profiles (Coconut Climber, Toddy Tapper, Auto Rickshaw Driver, Pani Puri Seller)
-- **Cold Mail Generation**: Professional cold email templates integrated with resume conversion
-- **Portfolio Creation**: Beautiful, shareable portfolio pages with username URLs
-- **File Upload Support**: PDF and DOCX resume parsing
-- **Supabase Integration**: Persistent storage with fallback to in-memory storage
-- **Professional Design**: Modern, responsive UI with gradient designs and animations
+## Basic Details
+### Team Name: Undefined
 
-## Tech Stack
 
-- **Framework**: Next.js 15.4.6 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **AI**: OpenAI GPT-4o
-- **Database**: Supabase (optional)
-- **Deployment**: Vercel
-- **File Processing**: PDF-parse, Mammoth
+### Team Members
+- Team Lead: Soorya Krishna P R - Christ College of Engineering, IJK
+- Member 2: Jyothis Mariya Joy - Christ College of Engineering, IJK
+
+### Project Description
+Transform your boring professional resume into a comedy masterpiece! Upload your serious CV and watch our AI turn it into themed, humorous resumes for unconventional career paths like Coconut Climber or Pani Puri Entrepreneur.
+
+### The Problem (that doesn't exist)
+Everyone's tired of looking at boring, professional resumes that actually make sense. Why should your resume be readable and relevant when it could be hilarious and completely unrelated to any real job? The world desperately needs more confusion in the hiring process!
+
+### The Solution (that nobody asked for)
+We built an AI-powered resume destroyer that converts your serious professional experience into themed career disasters. Want to be a Coconut Climber? We'll turn your React skills into "React-ive Tree Climbing." Applied to be a Software Engineer? Nah, you're now a Toddy Tapper with expertise in "Natural Fermentation and Bug Debugging."
+
+## Technical Details
+### Technologies/Components Used
+For Software:
+- **Languages**: TypeScript, JavaScript
+- **Frameworks**: Next.js 15, React 18
+- **Libraries**: Framer Motion (animations), OpenAI GPT-4o (AI conversion), jsPDF (PDF generation), pdf-parse & mammoth (file parsing), Tailwind CSS (styling)
+- **Database**: Supabase (PostgreSQL) for portfolio persistence
+- **Tools**: Vercel (deployment), ESLint (linting), PostCSS (CSS processing)
+
+### Key Features
+- ✨ **Smooth Animations**: Beautiful framer-motion animations throughout the landing page
+- 🤖 **AI-Powered Conversion**: GPT-4o transforms your resume into hilarious themed versions
+- 📄 **Multi-Format Support**: Upload PDF or DOCX files
+- 🌐 **Personal Portfolios**: Get your own portfolio URL (e.g., `/username`) 
+- 📊 **Database Persistence**: Portfolios saved with Supabase (optional)
+- 📧 **Cold Email Templates**: AI-generated professional cold emails
+- 📱 **Responsive Design**: Works seamlessly on all devices
+- 🔧 **Graceful Fallbacks**: Works even without database configuration
+
+For Hardware:
+- [List main components]
+- [List specifications]
+- [List tools required]
+
+### Implementation
+For Software:
 
 ## Quick Start
 
-### 1. Environment Setup
-
-Create a `.env.local` file in the root directory:
-
-```env
-# Required - OpenAI API Key for resume conversion
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Optional - Supabase Configuration (will use in-memory fallback if not provided)
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Environment
-NODE_ENV=production
-```
-
-### 2. Installation
-
 ```bash
+# Clone the repository
+git clone https://github.com/SooryaCodes/jobilla.git
+cd jobilla
+
+# Install dependencies
 npm install
-```
 
-### 3. Development
+# Set up environment variables
+cp .env.example .env.local
+# Add your OpenAI API key to .env.local:
+# OPENAI_API_KEY=sk-your-openai-key-here
 
-```bash
+# Start development server
 npm run dev
+# Navigate to http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+## Full Setup (with Portfolio Feature)
 
-### 4. Build
+For persistent portfolios, set up Supabase:
+
+1. **Create Supabase Project**: Go to [supabase.com](https://supabase.com) and create a new project
+
+2. **Add Supabase Credentials** to `.env.local`:
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   ```
+
+3. **Setup Database**: See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for detailed instructions
+
+4. **Health Check**: Visit `http://localhost:3000/api/health` to verify setup
+
+## Environment Variables
 
 ```bash
-npm run build
-npm run start
+# Required for AI conversion
+OPENAI_API_KEY=sk-your-openai-key-here
+
+# Optional for portfolio persistence  
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
-## Deployment to Vercel
+### Project Documentation
+For Software:
 
-### Option 1: Deploy via Vercel CLI
+# Screenshots (Add at least 3)
+![Screenshot1](https://via.placeholder.com/800x400?text=Resume+Converter+Demo)
+*Main landing page with file upload interface and role selection*
 
-1. Install Vercel CLI:
-```bash
-npm i -g vercel
-```
+![Screenshot2](https://via.placeholder.com/800x600?text=Portfolio+Demo)
+*Generated portfolio page showing transformed professional identity*
 
-2. Login and deploy:
-```bash
-vercel login
-vercel
-```
+![Screenshot3](https://via.placeholder.com/800x500?text=Resume+Output+Demo)
+*AI-generated resume with humorous role-specific transformations*
 
-### Option 2: Deploy via Vercel Dashboard
+# Diagrams
+![Workflow](https://via.placeholder.com/1000x600?text=System+Architecture+Diagram)
+*System workflow: File Upload → AI Processing → Resume Generation → Portfolio Creation*
 
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy
 
-### Required Environment Variables for Vercel:
-- `OPENAI_API_KEY` (Required)
-- `NEXT_PUBLIC_SUPABASE_URL` (Optional)
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Optional)
+### Project Demo
+# Video
+[Add your demo video link here]
+*Demonstrates the complete resume transformation process from upload to comedy gold*
 
-## Supabase Setup (Optional)
+# Additional Demos
+- Live deployment: [jobilla.vercel.app](https://jobilla.vercel.app)
 
-If you want persistent portfolio storage:
+## Team Contributions
+- [Team Lead]: AI prompt engineering, resume parsing logic, project architecture
+- [Member 2]: Frontend development, UI/UX design, portfolio generation
+- [Member 3]: Database integration, PDF generation, deployment configuration
 
-1. Create a Supabase project
-2. Create the following table:
+---
+Made with ❤️ at TinkerHub Useless Projects 
 
-```sql
-CREATE TABLE portfolio_profiles (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  username TEXT UNIQUE NOT NULL,
-  converted_resume JSONB NOT NULL,
-  portfolio_data JSONB NOT NULL,
-  role_key TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
+![Static Badge](https://img.shields.io/badge/TinkerHub-24?color=%23000000&link=https%3A%2F%2Fwww.tinkerhub.org%2F)
+![Static Badge](https://img.shields.io/badge/UselessProjects--25-25?link=https%3A%2F%2Fwww.tinkerhub.org%2Fevents%2FQ2Q1TQKX6Q%2FUseless%2520Projects)
 
-3. Add your Supabase credentials to environment variables
 
-## API Routes
 
-- `POST /api/parse` - Parse uploaded resume files
-- `POST /api/convert` - Convert parsed resume to themed version
-- `GET/POST /api/portfolio/[username]` - Portfolio management
-- `GET /api/portfolio/[username]/download` - Download resume as PDF
-- `POST /api/cold-mail` - Generate cold mail (legacy)
-
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js 15 App Router
-│   ├── [username]/        # Dynamic portfolio pages
-│   ├── api/               # API routes
-│   └── page.tsx          # Landing page
-├── components/
-│   └── upload/           # File upload components
-├── lib/
-│   ├── promptBuilder.ts  # AI prompt engineering
-│   ├── supabase.ts       # Database operations
-│   ├── pdfParser.ts      # File parsing utilities
-│   └── types.ts          # TypeScript interfaces
-└── styles/               # Global styles
-```
-
-## Key Features
-
-### Resume Transformation Roles:
-1. **Coconut Climber** - Tech skills → Tree climbing expertise
-2. **Toddy Tapper** - Development experience → Traditional brewing
-3. **Auto Rickshaw Driver** - Project management → Route navigation
-4. **Pani Puri Seller** - Customer service → Street food mastery
-
-### Generated Content:
-- Themed professional summary
-- Converted work experience with humor
-- Role-specific skills and certifications  
-- Professional cold mail template
-- Shareable portfolio website
-
-## Configuration Files
-
-- `next.config.js` - Next.js configuration with build optimizations
-- `vercel.json` - Vercel deployment configuration
-- `eslint.config.mjs` - Lenient ESLint rules for deployment
-- `tailwind.config.ts` - Tailwind CSS configuration
-
-## Build Optimizations
-
-The project includes several optimizations for deployment:
-
-- TypeScript and ESLint errors converted to warnings during build
-- Webpack fallbacks for Node.js modules in browser
-- External package handling for PDF parsing libraries
-- CORS headers configuration for API routes
-- Function timeout and memory configurations
-
-## Troubleshooting
-
-### Build Issues:
-- Ensure all environment variables are set
-- Clear `.next` directory if build fails: `rm -rf .next`
-- Check Node.js version compatibility (Node 18+)
-
-### Supabase Issues:
-- App works without Supabase (uses in-memory fallback)
-- Verify database table schema matches expected structure
-- Check environment variable names and values
-
-### API Issues:
-- Verify OpenAI API key is valid and has credits
-- Check API route paths and methods
-- Monitor Vercel function logs for errors
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-
-This project is for educational and demonstration purposes.

@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Upload, ArrowRight, FileText, Sparkles, Star, Zap, Coffee, Users, Download, CheckCircle, Play } from 'lucide-react';
 import FileUploader from '@/components/upload/FileUploader';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { useRef } from 'react';
 
 // Normal scrolling enabled
 
@@ -122,31 +124,51 @@ export default function Home() {
       <div style={{ backgroundColor: '#FFFCF8' }} className="relative">
         
         {/* Premium Navigation */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-neutral-200">
+        <motion.nav 
+          className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-neutral-200"
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-8">
-                <div className="text-2xl font-bold tracking-tight text-neutral-900 font-space">
+                <motion.div 
+                  className="text-2xl font-bold tracking-tight text-neutral-900 font-space"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
                   Jobilla
-                </div>
-                <div className="hidden md:flex items-center space-x-8">
+                </motion.div>
+                <motion.div 
+                  className="hidden md:flex items-center space-x-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
                   <a href="#features" className="text-neutral-600 hover:text-neutral-900 font-medium transition-colors font-space">Features</a>
                   <a href="#jobs" className="text-neutral-600 hover:text-neutral-900 font-medium transition-colors font-space">Jobs</a>
                   <a href="#examples" className="text-neutral-600 hover:text-neutral-900 font-medium transition-colors font-space">Examples</a>
-                </div>
+                </motion.div>
               </div>
-              <button 
+              <motion.button 
                 onClick={() => {
                   console.log('Get Started clicked - setting showUploader to true');
                   setShowUploader(true);
                 }}
                 className="btn btn-primary px-6 py-3 rounded-full font-semibold"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Get Started
-              </button>
+              </motion.button>
             </div>
           </div>
-        </nav>
+        </motion.nav>
 
         {/* Hero Section */}
         <section className="section pt-32 pb-20 relative overflow-hidden" id="container">
@@ -155,74 +177,166 @@ export default function Home() {
           
           {/* Floating Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 left-20 w-32 h-32 bg-accent-purple rounded-full opacity-10 blur-2xl" data-scroll data-scroll-speed="0.5"></div>
-            <div className="absolute bottom-40 right-32 w-40 h-40 bg-accent-teal rounded-full opacity-10 blur-3xl" data-scroll data-scroll-speed="-0.3"></div>
-            <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-accent-pink rounded-full opacity-10 blur-xl" data-scroll data-scroll-speed="0.8"></div>
+            <motion.div 
+              className="absolute top-20 left-20 w-32 h-32 bg-accent-purple rounded-full opacity-10 blur-2xl"
+              animate={{
+                y: [0, -20, 0],
+                x: [0, 10, 0],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            <motion.div 
+              className="absolute bottom-40 right-32 w-40 h-40 bg-accent-teal rounded-full opacity-10 blur-3xl"
+              animate={{
+                y: [0, 30, 0],
+                x: [0, -15, 0],
+                scale: [1, 0.9, 1],
+              }}
+              transition={{
+                duration: 10,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 1
+              }}
+            />
+            <motion.div 
+              className="absolute top-1/2 left-1/2 w-24 h-24 bg-accent-pink rounded-full opacity-10 blur-xl"
+              animate={{
+                y: [0, -15, 0],
+                x: [0, -8, 0],
+                rotate: [0, 180, 360],
+              }}
+              transition={{
+                duration: 12,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 2
+              }}
+            />
           </div>
 
           <div className="container mx-auto px-6 relative z-10">
             <div className="grid lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
               
               {/* Left - Hero Content */}
-              <div className="space-y-12">
+              <motion.div 
+                className="space-y-12"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
                 <div className="space-y-8">
-                  <div className="inline-block">
+                  <motion.div 
+                    className="inline-block"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                  >
                     <div className="px-6 py-3 bg-white border-2 border-neutral-900 rounded-full shadow-lg">
                       <div className="flex items-center space-x-3">
-                        <Sparkles className="w-5 h-5 text-accent-purple" />
+                        <motion.div
+                          animate={{ rotate: [0, 360] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        >
+                          <Sparkles className="w-5 h-5 text-accent-purple" />
+                        </motion.div>
                         <span className="font-semibold text-neutral-900 font-space">AI-Powered Career Transformation</span>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
 
                   <div className="space-y-8">
-                    <h1 className="text-display-large text-neutral-900 leading-tight">
+                    <motion.h1 
+                      className="text-display-medium text-neutral-900 leading-tight"
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.6 }}
+                    >
                       Your Resume.
-                      <span className="block text-accent-purple">Wrong Job.</span>
-                      <span className="block text-accent-teal">Perfect Match.</span>
-                    </h1>
+                      <motion.span 
+                        className="block text-accent-purple"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.8 }}
+                      >
+                        Wrong Job.
+                      </motion.span>
+                      <motion.span 
+                        className="block text-accent-teal"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 1.0 }}
+                      >
+                        Perfect Match.
+                      </motion.span>
+                    </motion.h1>
                     
-                    <p className="text-2xl text-neutral-600 font-medium leading-relaxed max-w-2xl">
+                    <motion.p 
+                      className="text-2xl text-neutral-600 font-medium leading-relaxed max-w-2xl"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 1.2 }}
+                    >
                       Transform your serious CV into ridiculously themed job applications — complete with resume, 
                       portfolio, and cold email that nobody asked for.
-                    </p>
+                    </motion.p>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-6">
-                  <button 
+                <motion.div 
+                  className="flex flex-col sm:flex-row gap-6"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.4 }}
+                >
+                  <motion.button 
                     onClick={() => {
                       console.log('Upload Resume clicked - setting showUploader to true');
                       setShowUploader(true);
                     }}
                     className="btn btn-accent px-12 py-6 text-xl font-semibold rounded-full group"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
                     <Upload className="w-6 h-6 mr-3 group-hover:animate-bounce" />
                     Upload Resume
                     <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                  <button className="btn btn-secondary px-12 py-6 text-xl font-semibold rounded-full">
+                  </motion.button>
+                  <motion.button 
+                    className="btn btn-secondary px-12 py-6 text-xl font-semibold rounded-full"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  >
                     <Play className="w-6 h-6 mr-3" />
                     See Examples
-                  </button>
-                </div>
+                  </motion.button>
+                </motion.div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8">
-                  {stats.map((stat, index) => (
-                    <div key={index} className="text-center">
-                      <div className="text-3xl mb-2">{stat.icon}</div>
-                      <div className="text-2xl font-bold text-neutral-900 mb-1">{stat.value}</div>
-                      <div className="text-sm text-neutral-600 font-medium leading-tight">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+               
+              </motion.div>
 
               {/* Right - Visual Demo */}
-              <div className="space-y-8">
+              <motion.div 
+                className="space-y-8"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
                 {/* Before */}
-                <div className="card p-8 hover:scale-105 transition-all duration-500">
+                <motion.div 
+                  className="card p-8 hover:scale-105 transition-all duration-500"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.7 }}
+                  whileHover={{ y: -5 }}
+                >
                   <div className="flex items-center justify-between mb-6">
                     <div className="px-4 py-2 bg-neutral-100 rounded-full">
                       <span className="font-bold text-neutral-600 text-sm font-space">BEFORE</span>
@@ -230,24 +344,65 @@ export default function Home() {
                     <div className="text-sm text-neutral-500">senior-developer.pdf</div>
                   </div>
                   <div className="space-y-4">
-                    <div className="h-4 bg-neutral-200 rounded-full w-full"></div>
-                    <div className="h-4 bg-neutral-200 rounded-full w-3/4"></div>
-                    <div className="h-4 bg-neutral-200 rounded-full w-5/6"></div>
+                    <motion.div 
+                      className="h-4 bg-neutral-200 rounded-full w-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 0.8, delay: 0.9 }}
+                    />
+                    <motion.div 
+                      className="h-4 bg-neutral-200 rounded-full w-3/4"
+                      initial={{ width: 0 }}
+                      animate={{ width: "75%" }}
+                      transition={{ duration: 0.8, delay: 1.1 }}
+                    />
+                    <motion.div 
+                      className="h-4 bg-neutral-200 rounded-full w-5/6"
+                      initial={{ width: 0 }}
+                      animate={{ width: "83.33%" }}
+                      transition={{ duration: 0.8, delay: 1.3 }}
+                    />
                   </div>
-                  <div className="text-center text-neutral-700 text-lg font-semibold mt-6">
+                  <motion.div 
+                    className="text-center text-neutral-700 text-lg font-semibold mt-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.5 }}
+                  >
                     "Senior Full Stack Developer"
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 {/* Arrow */}
-                <div className="flex justify-center">
-                  <div className="w-16 h-16 bg-accent-purple border-4 border-neutral-900 rounded-full flex items-center justify-center animate-bounce">
+                <motion.div 
+                  className="flex justify-center"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 1.7 }}
+                >
+                  <motion.div 
+                    className="w-16 h-16 bg-accent-purple border-4 border-neutral-900 rounded-full flex items-center justify-center"
+                    animate={{ 
+                      y: [0, -10, 0],
+                      rotate: [0, 360]
+                    }}
+                    transition={{ 
+                      y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                      rotate: { duration: 4, repeat: Infinity, ease: "linear" }
+                    }}
+                  >
                     <ArrowRight className="w-8 h-8 text-white rotate-90" />
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 {/* After */}
-                <div className="card-feature p-8 bg-accent-teal text-white hover-float">
+                <motion.div 
+                  className="card-feature p-8 bg-accent-teal text-white hover-float"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.9 }}
+                  whileHover={{ y: -5, scale: 1.02 }}
+                >
                   <div className="flex items-center justify-between mb-6">
                     <div className="px-4 py-2 bg-white/20 rounded-full">
                       <span className="font-bold text-white text-sm font-space">AFTER 🥥</span>
@@ -255,15 +410,35 @@ export default function Home() {
                     <div className="text-sm text-white/80">coconut-specialist.pdf</div>
                   </div>
                   <div className="space-y-4">
-                    <div className="h-4 bg-white/30 rounded-full w-full"></div>
-                    <div className="h-4 bg-white/30 rounded-full w-4/5"></div>
-                    <div className="h-4 bg-white/30 rounded-full w-11/12"></div>
+                    <motion.div 
+                      className="h-4 bg-white/30 rounded-full w-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 0.8, delay: 2.1 }}
+                    />
+                    <motion.div 
+                      className="h-4 bg-white/30 rounded-full w-4/5"
+                      initial={{ width: 0 }}
+                      animate={{ width: "80%" }}
+                      transition={{ duration: 0.8, delay: 2.3 }}
+                    />
+                    <motion.div 
+                      className="h-4 bg-white/30 rounded-full w-11/12"
+                      initial={{ width: 0 }}
+                      animate={{ width: "91.67%" }}
+                      transition={{ duration: 0.8, delay: 2.5 }}
+                    />
                   </div>
-                  <div className="text-center text-white text-lg font-bold mt-6">
+                  <motion.div 
+                    className="text-center text-white text-lg font-bold mt-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 2.7 }}
+                  >
                     "Senior Coconut Acquisition Specialist"
-                  </div>
-                </div>
-              </div>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
 
             </div>
           </div>
@@ -272,46 +447,122 @@ export default function Home() {
         {/* How It Works Section */}
         <section className="section bg-white relative" id="features">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-20">
-              <div className="inline-block px-8 py-4 bg-accent-amber text-white rounded-2xl font-semibold mb-8">
-                <Coffee className="w-6 h-6 mr-3 inline" />
+            <motion.div 
+              className="text-center mb-20"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.div 
+                className="inline-block px-8 py-4 bg-accent-amber text-white rounded-2xl font-semibold mb-8"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <motion.div
+                  animate={{ rotate: [0, 15, -15, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <Coffee className="w-6 h-6 mr-3 inline" />
+                </motion.div>
                 Lightning Fast Process
-              </div>
-              <h2 className="text-display-medium text-neutral-900 mb-8">
+              </motion.div>
+              <motion.h2 
+                className="text-display-medium text-neutral-900 mb-8"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
                 From PDF to Pani Puri Seller
-                <span className="block text-3xl font-semibold text-accent-purple mt-4 font-space">in Under 30 Seconds</span>
-              </h2>
-              <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
+                <motion.span 
+                  className="block text-3xl font-semibold text-accent-purple mt-4 font-space"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                >
+                  in Under 30 Seconds
+                </motion.span>
+              </motion.h2>
+              <motion.p 
+                className="text-xl text-neutral-600 max-w-3xl mx-auto"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+              >
                 Our premium AI transformation process turns your corporate credentials into comedy gold
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
             <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
               {steps.map((step, index) => (
-                <div key={index} className="text-center group">
-                  <div className="card-feature p-8 mb-8 hover-lift">
-                    <div className="w-24 h-24 mx-auto mb-8 bg-neutral-900 text-white rounded-2xl flex items-center justify-center">
+                <motion.div 
+                  key={index} 
+                  className="text-center group"
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.6, delay: index * 0.2 }}
+                >
+                  <motion.div 
+                    className="card-feature p-8 mb-8 hover-lift"
+                    whileHover={{ y: -10, scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    <motion.div 
+                      className="w-24 h-24 mx-auto mb-8 bg-neutral-900 text-white rounded-2xl flex items-center justify-center"
+                      whileHover={{ rotate: 360 }}
+                      transition={{ duration: 0.5 }}
+                    >
                       {step.icon}
-                    </div>
+                    </motion.div>
                     
                     <div className="space-y-6">
-                      <div className="text-sm font-black text-accent-purple tracking-wider font-space">
+                      <motion.div 
+                        className="text-sm font-black text-accent-purple tracking-wider font-space"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: index * 0.2 + 0.3 }}
+                      >
                         STEP {step.number}
-                      </div>
-                      <h3 className="text-2xl font-bold text-neutral-900">
+                      </motion.div>
+                      <motion.h3 
+                        className="text-2xl font-bold text-neutral-900"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: index * 0.2 + 0.4 }}
+                      >
                         {step.title}
-                      </h3>
-                      <p className="text-neutral-600 font-medium leading-relaxed">
+                      </motion.h3>
+                      <motion.p 
+                        className="text-neutral-600 font-medium leading-relaxed"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: index * 0.2 + 0.5 }}
+                      >
                         {step.description}
-                      </p>
-                      <div className="px-6 py-3 bg-neutral-100 rounded-full">
+                      </motion.p>
+                      <motion.div 
+                        className="px-6 py-3 bg-neutral-100 rounded-full"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: index * 0.2 + 0.6 }}
+                      >
                         <p className="text-sm font-semibold text-neutral-700 italic">
                           "{step.caption}"
                         </p>
-                      </div>
+                      </motion.div>
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -320,33 +571,84 @@ export default function Home() {
         {/* Jobs Showcase - Only 4 Jobs */}
         <section className="section bg-neutral-900 text-white relative" id="jobs">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-20">
-              <div className="inline-block px-8 py-4 bg-accent-pink text-white rounded-2xl font-semibold mb-8">
-                <Users className="w-6 h-6 mr-3 inline" />
+            <motion.div 
+              className="text-center mb-20"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.div 
+                className="inline-block px-8 py-4 bg-accent-pink text-white rounded-2xl font-semibold mb-8"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
+                >
+                  <Users className="w-6 h-6 mr-3 inline" />
+                </motion.div>
                 Premium Career Destruction
-              </div>
-              <h2 className="text-display-medium text-white mb-8">
+              </motion.div>
+              <motion.h2 
+                className="text-display-medium text-white mb-8"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
                 Jobs Nobody Asked For
-              </h2>
-              <p className="text-xl text-neutral-300 max-w-3xl mx-auto">
+              </motion.h2>
+              <motion.p 
+                className="text-xl text-neutral-300 max-w-3xl mx-auto"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
                 Choose from our expertly curated collection of professionally questionable transformations
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {jobs.map((job, index) => (
-                <div 
+                <motion.div 
                   key={index} 
-                  className="group cursor-pointer" 
-
+                  className="group cursor-pointer"
                   onClick={() => setShowUploader(true)}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -10 }}
                 >
-                  <div className={`card-feature p-8 bg-white text-neutral-900 hover-float transition-all duration-500`}>
+                  <motion.div 
+                    className={`card-feature p-8 bg-white text-neutral-900 hover-float transition-all duration-500`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
                     <div className="text-center space-y-6">
-                      <div className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <motion.div 
+                        className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300"
+                        whileHover={{ 
+                          scale: 1.2,
+                          rotate: [0, -10, 10, -10, 0],
+                        }}
+                        transition={{ 
+                          rotate: { duration: 0.5 }
+                        }}
+                      >
                         {job.emoji}
-                      </div>
-                      <div>
+                      </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: index * 0.1 + 0.3 }}
+                      >
                         <h3 className="text-2xl font-bold text-neutral-900 mb-3">
                           {job.title}
                         </h3>
@@ -356,28 +658,53 @@ export default function Home() {
                         <p className="text-neutral-600 mb-6 leading-relaxed">
                           {job.description}
                         </p>
-                      </div>
+                      </motion.div>
                       
-                      <div className="space-y-4">
+                      <motion.div 
+                        className="space-y-4"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: index * 0.1 + 0.5 }}
+                      >
                         <div className="text-sm font-semibold text-neutral-900 font-space">Key Skills:</div>
                         <div className="flex flex-wrap gap-2 justify-center">
                           {job.skills.map((skill, skillIndex) => (
-                            <span key={skillIndex} className="px-3 py-1 bg-neutral-100 text-neutral-700 rounded-full text-xs font-medium">
+                            <motion.span 
+                              key={skillIndex} 
+                              className="px-3 py-1 bg-neutral-100 text-neutral-700 rounded-full text-xs font-medium"
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              whileInView={{ opacity: 1, scale: 1 }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.3, delay: index * 0.1 + skillIndex * 0.1 + 0.6 }}
+                              whileHover={{ scale: 1.1, y: -2 }}
+                            >
                               {skill}
-                            </span>
+                            </motion.span>
                           ))}
                         </div>
-                      </div>
+                      </motion.div>
 
-                      <div className="pt-6 border-t border-neutral-200">
+                      <motion.div 
+                        className="pt-6 border-t border-neutral-200"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: index * 0.1 + 0.7 }}
+                      >
                         <div className="flex items-center justify-center space-x-2 text-neutral-900 font-semibold group-hover:text-accent-purple transition-colors">
                           <span>Try this transformation</span>
-                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                          <motion.div
+                            animate={{ x: [0, 5, 0] }}
+                            transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+                          >
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                          </motion.div>
                         </div>
-                      </div>
+                      </motion.div>
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -386,103 +713,251 @@ export default function Home() {
         {/* Example Section */}
         <section className="section bg-white" id="examples">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-20">
-              <div className="inline-block px-8 py-4 bg-accent-teal text-white rounded-2xl font-semibold mb-8">
-                <Zap className="w-6 h-6 mr-3 inline" />
+            <motion.div 
+              className="text-center mb-20"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.div 
+                className="inline-block px-8 py-4 bg-accent-teal text-white rounded-2xl font-semibold mb-8"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <motion.div
+                  animate={{ 
+                    rotate: [0, 15, -15, 0],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{ 
+                    duration: 2, 
+                    repeat: Infinity, 
+                    repeatDelay: 3,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Zap className="w-6 h-6 mr-3 inline" />
+                </motion.div>
                 Real Transformations
-              </div>
-              <h2 className="text-display-medium text-neutral-900 mb-8">
+              </motion.div>
+              <motion.h2 
+                className="text-display-medium text-neutral-900 mb-8"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
                 See the Magic Happen
-              </h2>
-              <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
+              </motion.h2>
+              <motion.p 
+                className="text-xl text-neutral-600 max-w-3xl mx-auto"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
                 Watch how we transform corporate resumes into entertainment masterpieces
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
             <div className="grid lg:grid-cols-2 gap-16 items-start max-w-6xl mx-auto">
               {/* Before */}
-              <div className="card p-8">
-                <div className="flex items-center justify-between mb-8">
+              <motion.div 
+                className="card p-8"
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                whileHover={{ y: -5 }}
+              >
+                <motion.div 
+                  className="flex items-center justify-between mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.4 }}
+                >
                   <div className="px-6 py-3 bg-neutral-100 rounded-full">
                     <span className="font-bold text-neutral-700 font-space">ORIGINAL RESUME</span>
                   </div>
                   <div className="text-sm text-neutral-500">john-smith-cv.pdf</div>
-                </div>
+                </motion.div>
 
                 <div className="space-y-8">
-                  <div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.5 }}
+                  >
                     <h3 className="text-3xl font-bold text-neutral-900 mb-2">John Smith</h3>
                     <p className="text-xl text-neutral-600 font-semibold">Senior Full Stack Developer</p>
-                  </div>
+                  </motion.div>
                   
                   <div className="space-y-6">
-                    <div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.6 }}
+                    >
                       <h4 className="font-bold text-neutral-900 mb-3 text-lg font-space">Experience</h4>
                       <div className="space-y-3 text-neutral-700">
-                        <p className="flex items-start"><CheckCircle className="w-5 h-5 text-accent-teal mr-3 mt-0.5" />5+ years building scalable web applications</p>
-                        <p className="flex items-start"><CheckCircle className="w-5 h-5 text-accent-teal mr-3 mt-0.5" />Led team of 8 developers on React projects</p>
-                        <p className="flex items-start"><CheckCircle className="w-5 h-5 text-accent-teal mr-3 mt-0.5" />Optimized database performance by 40%</p>
+                        {[
+                          "5+ years building scalable web applications",
+                          "Led team of 8 developers on React projects", 
+                          "Optimized database performance by 40%"
+                        ].map((text, index) => (
+                          <motion.p 
+                            key={index}
+                            className="flex items-start"
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.3, delay: 0.7 + index * 0.1 }}
+                          >
+                            <CheckCircle className="w-5 h-5 text-accent-teal mr-3 mt-0.5" />{text}
+                          </motion.p>
+                        ))}
                       </div>
-                    </div>
+                    </motion.div>
                     
-                    <div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.8 }}
+                    >
                       <h4 className="font-bold text-neutral-900 mb-3 text-lg font-space">Technical Skills</h4>
                       <div className="flex flex-wrap gap-2">
-                        <span className="px-4 py-2 bg-neutral-100 border border-neutral-300 rounded-lg text-sm font-semibold">React</span>
-                        <span className="px-4 py-2 bg-neutral-100 border border-neutral-300 rounded-lg text-sm font-semibold">Node.js</span>
-                        <span className="px-4 py-2 bg-neutral-100 border border-neutral-300 rounded-lg text-sm font-semibold">MongoDB</span>
+                        {["React", "Node.js", "MongoDB"].map((skill, index) => (
+                          <motion.span 
+                            key={index}
+                            className="px-4 py-2 bg-neutral-100 border border-neutral-300 rounded-lg text-sm font-semibold"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.3, delay: 0.9 + index * 0.1 }}
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            {skill}
+                          </motion.span>
+                        ))}
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* After */}
-              <div className="card-feature p-8 bg-accent-teal text-white">
-                <div className="flex items-center justify-between mb-8">
+              <motion.div 
+                className="card-feature p-8 bg-accent-teal text-white"
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                whileHover={{ y: -5, scale: 1.02 }}
+              >
+                <motion.div 
+                  className="flex items-center justify-between mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.6 }}
+                >
                   <div className="px-6 py-3 bg-white/20 rounded-full">
                     <span className="font-bold text-white font-space">COCONUT VERSION 🥥</span>
                   </div>
                   <div className="text-sm text-white/80">john-coconut-master.pdf</div>
-                </div>
+                </motion.div>
 
                 <div className="space-y-8">
-                  <div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.7 }}
+                  >
                     <h3 className="text-3xl font-bold text-white mb-2">John "Coconut" Smith</h3>
                     <p className="text-xl text-white/90 font-semibold">Senior Coconut Acquisition Specialist</p>
-                  </div>
+                  </motion.div>
                   
                   <div className="space-y-6">
-                    <div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.8 }}
+                    >
                       <h4 className="font-bold text-white mb-3 text-lg font-space">Professional Experience</h4>
                       <div className="space-y-3 text-white/90">
-                        <p className="flex items-start"><CheckCircle className="w-5 h-5 text-white mr-3 mt-0.5" />5+ years scaling coconut trees with React-ive precision</p>
-                        <p className="flex items-start"><CheckCircle className="w-5 h-5 text-white mr-3 mt-0.5" />Led grove of 8 coconut trees in optimal harvesting</p>
-                        <p className="flex items-start"><CheckCircle className="w-5 h-5 text-white mr-3 mt-0.5" />Optimized climbing routes reducing fall time by 40%</p>
+                        {[
+                          "5+ years scaling coconut trees with React-ive precision",
+                          "Led grove of 8 coconut trees in optimal harvesting",
+                          "Optimized climbing routes reducing fall time by 40%"
+                        ].map((text, index) => (
+                          <motion.p 
+                            key={index}
+                            className="flex items-start"
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.3, delay: 0.9 + index * 0.1 }}
+                          >
+                            <CheckCircle className="w-5 h-5 text-white mr-3 mt-0.5" />{text}
+                          </motion.p>
+                        ))}
                       </div>
-                    </div>
+                    </motion.div>
                     
-                    <div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 1.0 }}
+                    >
                       <h4 className="font-bold text-white mb-3 text-lg font-space">Specialized Skills</h4>
                       <div className="flex flex-wrap gap-2">
-                        <span className="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-sm font-semibold">Tree Climbing</span>
-                        <span className="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-sm font-semibold">Coconut.js</span>
-                        <span className="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-sm font-semibold">MongooseDB</span>
+                        {["Tree Climbing", "Coconut.js", "MongooseDB"].map((skill, index) => (
+                          <motion.span 
+                            key={index}
+                            className="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-sm font-semibold"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.3, delay: 1.1 + index * 0.1 }}
+                            whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.3)" }}
+                          >
+                            {skill}
+                          </motion.span>
+                        ))}
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
-            <div className="text-center mt-16">
-              <button 
+            <motion.div 
+              className="text-center mt-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
+              <motion.button 
                 onClick={() => setShowUploader(true)}
                 className="btn btn-accent px-12 py-6 text-xl font-semibold rounded-full"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
                 Transform Your Resume <ArrowRight className="w-6 h-6 ml-3 inline" />
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           </div>
         </section>
 
@@ -490,50 +965,145 @@ export default function Home() {
         <section className="section bg-accent-purple text-white relative">
           <div className="absolute inset-0 bg-pattern opacity-20"></div>
           <div className="container mx-auto px-6 text-center relative z-10">
-            <div className="max-w-5xl mx-auto space-y-12">
-              <div className="space-y-8">
-                <h2 className="text-display-medium text-white leading-tight">
+            <motion.div 
+              className="max-w-5xl mx-auto space-y-12"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.div 
+                className="space-y-8"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <motion.h2 
+                  className="text-display-medium text-white leading-tight"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                >
                   Your serious career
-                  <span className="block text-white/90">needs a holiday.</span>
-                </h2>
-                <p className="text-2xl text-white/90 font-medium leading-relaxed max-w-4xl mx-auto">
+                  <motion.span 
+                    className="block text-white/90"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                  >
+                    needs a holiday.
+                  </motion.span>
+                </motion.h2>
+                <motion.p 
+                  className="text-2xl text-white/90 font-medium leading-relaxed max-w-4xl mx-auto"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                >
                   Join Jobilla — the only career tool designed to make you completely unemployable… and absolutely unforgettable.
-                </p>
-              </div>
+                </motion.p>
+              </motion.div>
 
-              <button 
+              <motion.button 
                 onClick={() => setShowUploader(true)}
                 className="btn bg-white text-accent-purple hover:bg-neutral-50 border-4 border-neutral-900 px-16 py-8 text-2xl font-bold rounded-full group shadow-2xl font-space"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 15
+                }}
+                whileHover={{ 
+                  scale: 1.05, 
+                  y: -5,
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Sparkles className="w-8 h-8 mr-4 group-hover:animate-spin" />
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                >
+                  <Sparkles className="w-8 h-8 mr-4" />
+                </motion.div>
                 Try Jobilla Now
-                <ArrowRight className="w-8 h-8 ml-4 group-hover:translate-x-2 transition-transform" />
-              </button>
+                <motion.div
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
+                >
+                  <ArrowRight className="w-8 h-8 ml-4" />
+                </motion.div>
+              </motion.button>
 
-              <div className="pt-12 space-y-6">
-                <p className="text-lg font-semibold text-white/90 font-space">
+              <motion.div 
+                className="pt-12 space-y-6"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 1.0 }}
+              >
+                <motion.p 
+                  className="text-lg font-semibold text-white/90 font-space"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 1.1 }}
+                >
                   Built in 24 hours by sleep-deprived developers armed with coconuts and caffeine.
-                </p>
-                <div className="flex flex-wrap justify-center gap-8 text-sm font-medium text-white/80">
-                  <span>No signup required</span>
-                  <span>•</span>
-                  <span>Results in 30 seconds</span>
-                  <span>•</span>
-                  <span>100% ridiculous</span>
-                  <span>•</span>
-                  <span>Built for entertainment</span>
-                </div>
-              </div>
-            </div>
+                </motion.p>
+                <motion.div 
+                  className="flex flex-wrap justify-center gap-8 text-sm font-medium text-white/80"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 1.2 }}
+                >
+                  {["No signup required", "Results in 30 seconds", "100% ridiculous", "Built for entertainment"].map((text, index) => (
+                    <motion.span
+                      key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.3, delay: 1.3 + index * 0.1 }}
+                    >
+                      {text}
+                      {index < 3 && <span className="ml-8">•</span>}
+                    </motion.span>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="bg-neutral-900 text-white py-12">
+        <motion.footer 
+          className="bg-neutral-900 text-white py-12"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="container mx-auto px-6 text-center">
-            <p className="text-neutral-400">&copy; 2024 Jobilla. Made with 🥥 and questionable career advice.</p>
+            <motion.p 
+              className="text-neutral-400"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              &copy; 2024 Jobilla. Made with 🥥 and questionable career advice.
+            </motion.p>
           </div>
-        </footer>
+        </motion.footer>
 
       </div>
     </div>

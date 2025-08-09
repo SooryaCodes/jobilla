@@ -121,31 +121,63 @@ function parseResumeText(text: string) {
 function extractContactInfo(text: string, lines: string[]): ContactInfo {
   console.log('Extracting contact info from lines:', lines.slice(0, 10));
   
-  // Find name (look for person's name patterns)
-  let name = 'Resume Holder';
-  const namePatterns = [
-    // Look for capitalized names at the beginning
-    /^([A-Z][a-z]+\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\b/,
-    // Look for all caps names
-    /^([A-Z]{2,}\s+[A-Z]{2,}(?:\s+[A-Z]{2,})?)\b/
-  ];
+  // Find name (look for person's name patterns) - try multiple approaches
+  let name = '';
   
-  for (const line of lines.slice(0, 8)) {
-    if (line.length > 4 && line.length < 50) {
-      for (const pattern of namePatterns) {
-        const match = line.match(pattern);
-        if (match && !line.includes('@') && !line.match(/\d{3}/) && 
-            !line.toLowerCase().includes('resume') &&
-            !line.toLowerCase().includes('cv') &&
-            !line.toLowerCase().includes('phone') &&
-            !line.toLowerCase().includes('email')) {
-          name = match[1].trim();
+  // First, try to find a proper name in the first few lines
+  for (const line of lines.slice(0, 5)) {
+    const trimmed = line.trim();
+    if (trimmed.length > 3 && trimmed.length < 50) {
+      // Skip lines with obvious non-name content
+      if (trimmed.includes('@') || 
+          trimmed.match(/\d{3,}/) || 
+          trimmed.toLowerCase().includes('resume') ||
+          trimmed.toLowerCase().includes('cv') ||
+          trimmed.toLowerCase().includes('phone') ||
+          trimmed.toLowerCase().includes('email') ||
+          trimmed.toLowerCase().includes('address')) {
+        continue;
+      }
+      
+      // Check if it looks like a name (2-3 words, mostly letters)
+      const words = trimmed.split(/\s+/);
+      if (words.length >= 2 && words.length <= 3) {
+        const isLikelyName = words.every(word => 
+          word.length > 1 && 
+          /^[A-Za-z][A-Za-z]*$/.test(word)
+        );
+        
+        if (isLikelyName) {
+          name = words.map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          ).join(' ');
           console.log('Found name:', name);
           break;
         }
       }
-      if (name !== 'Resume Holder') break;
     }
+  }
+  
+  // If still no name, try to extract from email
+  if (!name) {
+    const emailMatch = text.match(/([a-zA-Z0-9._%+-]+)@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (emailMatch) {
+      const emailPart = emailMatch[1].replace(/[._\d]/g, ' ').trim();
+      if (emailPart.length > 2) {
+        const words = emailPart.split(/\s+/).filter(w => w.length > 1);
+        if (words.length >= 2) {
+          name = words.slice(0, 2).map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          ).join(' ');
+          console.log('Extracted name from email:', name);
+        }
+      }
+    }
+  }
+  
+  // Final fallback
+  if (!name) {
+    name = 'Professional';
   }
   
   // Extract email with better pattern
@@ -556,8 +588,16 @@ export async function parsePDF(buffer: Buffer): Promise<ParseResult> {
         extractedText = String(data.text);
       }
       
+      // Clean up common PDF extraction issues
+      extractedText = extractedText
+        .replace(/\s+/g, ' ')  // Normalize whitespace
+        .replace(/([a-z])([A-Z])/g, '$1 $2')  // Add spaces between camelCase
+        .replace(/([a-z])(\d)/g, '$1 $2')     // Add spaces between letters and numbers
+        .replace(/(\d)([a-z])/g, '$1 $2')     // Add spaces between numbers and letters
+        .trim();
+      
       console.log('Extracted text length:', extractedText.length);
-      console.log('Extracted text preview (first 200 chars):', extractedText.substring(0, 200));
+      console.log('Extracted text preview (first 300 chars):', extractedText.substring(0, 300));
       
       // Validate the extracted text
       if (extractedText && extractedText.length > 20) {

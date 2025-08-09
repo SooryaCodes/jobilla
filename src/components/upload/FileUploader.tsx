@@ -49,6 +49,7 @@ export default function FileUploader({ onUploadComplete, onError }: FileUploader
   const [showResults, setShowResults] = useState(false);
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [showColdMail, setShowColdMail] = useState(false);
+  const [portfolioSaved, setPortfolioSaved] = useState(false);
 
   const roles = getAllRoles();
 
@@ -217,7 +218,8 @@ export default function FileUploader({ onUploadComplete, onError }: FileUploader
       // Save portfolio to backend
       if (username && selectedRole) {
         try {
-          await fetch(`/api/portfolio/${username}`, {
+          console.log('Saving portfolio for username:', username);
+          const portfolioResponse = await fetch(`/api/portfolio/${username}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -225,8 +227,21 @@ export default function FileUploader({ onUploadComplete, onError }: FileUploader
               roleKey: selectedRole
             })
           });
+
+          const portfolioResult = await portfolioResponse.json();
+          
+          if (!portfolioResponse.ok || !portfolioResult.success) {
+            console.error('Portfolio save failed:', portfolioResult.error);
+            throw new Error(portfolioResult.error || 'Portfolio save failed');
+          }
+
+          console.log('Portfolio saved successfully:', portfolioResult);
+          setPortfolioSaved(true);
         } catch (error) {
           console.error('Failed to save portfolio:', error);
+          setPortfolioSaved(false);
+          // Show user-friendly error message
+          alert(`Portfolio save failed: ${error instanceof Error ? error.message : 'Unknown error'}. You can still download your resume, but the portfolio won't be available online.`);
         }
       }
 
@@ -300,8 +315,11 @@ export default function FileUploader({ onUploadComplete, onError }: FileUploader
     if (!conversionState.convertedResume) return;
     
     try {
-      const { jsPDF } = await import('jspdf');
+      console.log('Starting PDF download generation...');
+      const jsPDFModule = await import('jspdf');
+      const jsPDF = jsPDFModule.default || jsPDFModule.jsPDF;
       const pdf = new jsPDF();
+      console.log('jsPDF initialized successfully');
       
       const resume = conversionState.convertedResume;
       let yPosition = 20;
@@ -317,81 +335,117 @@ export default function FileUploader({ onUploadComplete, onError }: FileUploader
         return y + (lines.length * lineHeight);
       };
       
-      // Header - Name and Role
-      pdf.setFontSize(20);
+      // Header - Name and Role with better formatting
+      pdf.setFontSize(24);
       pdf.setFont('helvetica', 'bold');
-      const resumeName = resume.contact?.name || 'Resume';
+      pdf.setTextColor(0, 0, 0);
+      const resumeName = resume.contact?.name || resume.nickname || 'Professional Resume';
       pdf.text(resumeName, 20, yPosition);
-      yPosition += 10;
+      yPosition += 12;
       
-      pdf.setFontSize(16);
-      pdf.setTextColor(100, 100, 100);
+      pdf.setFontSize(18);
+      pdf.setTextColor(70, 130, 180); // Steel blue color
       const roleTitle = resume.roleTitle || 'Professional';
       pdf.text(roleTitle, 20, yPosition);
       yPosition += 15;
       
-      // Contact Info
-      pdf.setFontSize(10);
+      // Contact info section with better layout
+      pdf.setFontSize(11);
       pdf.setTextColor(0, 0, 0);
       pdf.setFont('helvetica', 'normal');
-      const contactInfo = [
-        resume.contact?.email,
-        resume.contact?.phone,
-        resume.contact?.location
-      ].filter(Boolean).join(' | ');
-      yPosition = addWrappedText(contactInfo, 20, yPosition, maxWidth);
-      yPosition += 10;
+      const contactInfo = [];
+      if (resume.contact?.email) contactInfo.push(`📧 ${resume.contact.email}`);
+      if (resume.contact?.phone) contactInfo.push(`📱 ${resume.contact.phone}`);
+      if (resume.contact?.location) contactInfo.push(`📍 ${resume.contact.location}`);
       
-      // Professional Summary
-      pdf.setFontSize(14);
+      if (contactInfo.length > 0) {
+        pdf.text(contactInfo.join('  •  '), 20, yPosition);
+        yPosition += 8;
+      }
+      
+      // Add separator line
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(20, yPosition, pageWidth - 20, yPosition);
+      yPosition += 8;
+      
+      // Professional Summary with better formatting
+      pdf.setFontSize(16);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Professional Summary', 20, yPosition);
-      yPosition += 7;
-      pdf.setFont('helvetica', 'normal');
-      const summaryText = resume.summary || 'Professional with diverse experience';
-      yPosition = addWrappedText(summaryText, 20, yPosition, maxWidth, 10);
+      pdf.setTextColor(70, 130, 180);
+      pdf.text('🎯 Professional Summary', 20, yPosition);
       yPosition += 10;
       
-      // Skills
-      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(0, 0, 0);
+      const summaryText = resume.summary || 'Professional with diverse experience and expertise';
+      yPosition = addWrappedText(summaryText, 20, yPosition, maxWidth, 11);
+      yPosition += 12;
+      
+      // Skills section with better formatting
+      pdf.setFontSize(16);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Skills', 20, yPosition);
-      yPosition += 7;
-      pdf.setFont('helvetica', 'normal');
-      const skillsText = resume.skills?.join(', ') || 'Professional Skills';
-      yPosition = addWrappedText(skillsText, 20, yPosition, maxWidth, 10);
+      pdf.setTextColor(70, 130, 180);
+      pdf.text('🛠️ Core Skills & Expertise', 20, yPosition);
       yPosition += 10;
       
-            // Experience
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(0, 0, 0);
+      
+      // Display skills in organized rows
+      if (resume.skills && resume.skills.length > 0) {
+        const skillsPerRow = 3;
+        for (let i = 0; i < resume.skills.length; i += skillsPerRow) {
+          const rowSkills = resume.skills.slice(i, i + skillsPerRow);
+          const skillsText = '• ' + rowSkills.join('   • ');
+          yPosition = addWrappedText(skillsText, 25, yPosition, maxWidth - 5, 11);
+          yPosition += 2;
+        }
+      }
+      yPosition += 8;
+      
+            // Work Experience with improved formatting
       if (resume.workExperience && resume.workExperience.length > 0) {
-        pdf.setFontSize(14);
+        pdf.setFontSize(16);
         pdf.setFont('helvetica', 'bold');
-        pdf.text('Experience', 20, yPosition);
-        yPosition += 7;
+        pdf.setTextColor(70, 130, 180);
+        pdf.text('💼 Professional Experience', 20, yPosition);
+        yPosition += 10;
         
-        resume.workExperience.forEach(exp => {
+        resume.workExperience.forEach((exp, index) => {
           if (yPosition > 250) {
             pdf.addPage();
             yPosition = 20;
           }
           
+          // Position
           pdf.setFont('helvetica', 'bold');
-          const expTitle = `${exp.position || 'Position'} at ${exp.company || 'Company'}`;
-          yPosition = addWrappedText(expTitle, 20, yPosition, maxWidth, 12);
-          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(13);
+          pdf.setTextColor(0, 0, 0);
+          pdf.text(exp.position || 'Position', 20, yPosition);
+          yPosition += 6;
+          
+          // Company and dates
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(11);
           pdf.setTextColor(100, 100, 100);
-          const expDates = `${exp.startDate || 'Start'} - ${exp.endDate || 'End'}`;
-          yPosition = addWrappedText(expDates, 20, yPosition, maxWidth, 9);
+          const companyInfo = `${exp.company || 'Company'} | ${exp.startDate || 'Start'} - ${exp.endDate || 'End'}`;
+          pdf.text(companyInfo, 20, yPosition);
+          yPosition += 8;
+          
+          // Responsibilities/Description
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(10);
           pdf.setTextColor(0, 0, 0);
           
-          if (exp.description && exp.description.length > 0) {
-            exp.description.forEach(desc => {
-              yPosition = addWrappedText(`• ${desc}`, 25, yPosition, maxWidth - 5, 9);
-            });
-          }
-          yPosition += 5;
+          const descriptions = exp.description || [];
+          descriptions.slice(0, 4).forEach(desc => {  // Limit to 4 key points
+            yPosition = addWrappedText(`▪ ${desc}`, 25, yPosition, maxWidth - 10, 10);
+            yPosition += 3;
+          });
+          
+          // Add space between experiences
+          yPosition += index < resume.workExperience.length - 1 ? 8 : 12;
         });
-        yPosition += 5;
       }
       
       // Projects
@@ -412,9 +466,16 @@ export default function FileUploader({ onUploadComplete, onError }: FileUploader
           yPosition = addWrappedText(projectName, 20, yPosition, maxWidth, 11);
           pdf.setFont('helvetica', 'normal');
           
-          if (project.description && project.description.length > 0) {
-            project.description.forEach(desc => {
-              yPosition = addWrappedText(`• ${desc}`, 25, yPosition, maxWidth - 5, 9);
+          if (project.description) {
+            // Handle both string and array descriptions
+            const descriptions = Array.isArray(project.description) 
+              ? project.description 
+              : [project.description];
+            
+            descriptions.forEach(desc => {
+              if (desc && typeof desc === 'string') {
+                yPosition = addWrappedText(`• ${desc}`, 25, yPosition, maxWidth - 5, 9);
+              }
             });
           }
           yPosition += 5;
@@ -515,10 +576,13 @@ export default function FileUploader({ onUploadComplete, onError }: FileUploader
       
       // Save the PDF
       const fileName = `${resume.contact?.name?.replace(/\s+/g, '-') || 'converted'}-${selectedRole}-resume.pdf`;
+      console.log('Saving PDF with filename:', fileName);
       pdf.save(fileName);
+      console.log('PDF saved successfully');
       
     } catch (error) {
       console.error('Error generating PDF:', error);
+      console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
       // Fallback to text file
       const content = `${conversionState.convertedResume.contact?.name || 'Converted Resume'}\n\n${conversionState.convertedResume.roleTitle || ''}\n\nSummary:\n${conversionState.convertedResume.summary || ''}`;
     const blob = new Blob([content], { type: 'text/plain' });
@@ -902,7 +966,7 @@ export default function FileUploader({ onUploadComplete, onError }: FileUploader
                   </button>
                 )}
                 
-                {username && (
+                {username && portfolioSaved && (
                   <a
                     href={`/${username}`}
                     target="_blank"
@@ -912,6 +976,72 @@ export default function FileUploader({ onUploadComplete, onError }: FileUploader
                     <ExternalLink className="w-5 h-5 mr-3" />
                     View Portfolio
                   </a>
+                )}
+                
+                {username && !portfolioSaved && (
+                  <div className="space-y-2">
+                    <div className="w-full px-6 py-4 rounded-full border-2 border-dashed border-gray-300 text-gray-500 text-center">
+                      <span className="text-sm">Portfolio creation failed. Check console for details.</span>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={async () => {
+                          try {
+                            console.log('Testing portfolio retrieval for:', username);
+                            const response = await fetch(`/api/portfolio/${username}`);
+                            const result = await response.json();
+                            console.log('Portfolio test result:', result);
+                            if (response.ok && result) {
+                              setPortfolioSaved(true);
+                              alert('Portfolio found! You can now view it.');
+                            } else {
+                              alert('Portfolio not found: ' + (result.error || 'Unknown error'));
+                            }
+                          } catch (error) {
+                            console.error('Portfolio test error:', error);
+                            alert('Error checking portfolio: ' + error);
+                          }
+                        }}
+                        className="btn btn-outline flex-1 px-4 py-2 rounded-full text-sm hover:scale-105 transition-all duration-300"
+                      >
+                        Test Portfolio
+                      </button>
+                      
+                      <button
+                        onClick={async () => {
+                          if (!conversionState.convertedResume || !selectedRole) return;
+                          
+                          try {
+                            console.log('Retrying portfolio save for username:', username);
+                            const portfolioResponse = await fetch(`/api/portfolio/${username}`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                convertedResume: conversionState.convertedResume,
+                                roleKey: selectedRole
+                              })
+                            });
+
+                            const portfolioResult = await portfolioResponse.json();
+                            
+                            if (!portfolioResponse.ok || !portfolioResult.success) {
+                              throw new Error(portfolioResult.error || 'Portfolio save failed');
+                            }
+
+                            console.log('Portfolio retry successful:', portfolioResult);
+                            setPortfolioSaved(true);
+                            alert('Portfolio saved successfully! You can now view it.');
+                          } catch (error) {
+                            console.error('Portfolio retry failed:', error);
+                            alert(`Retry failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                          }
+                        }}
+                        className="btn btn-primary flex-1 px-4 py-2 rounded-full text-sm hover:scale-105 transition-all duration-300"
+                      >
+                        Retry Save
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

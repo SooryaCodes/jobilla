@@ -1,57 +1,110 @@
 import { createClient } from '@supabase/supabase-js';
+import { ConvertedResume } from './types';
 
+// Supabase configuration
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase credentials not found. Portfolio storage will use fallback mode.');
-}
-
-export const supabase = supabaseUrl && supabaseAnonKey 
-  ? createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = supabaseUrl && supabaseKey 
+  ? createClient(supabaseUrl, supabaseKey)
   : null;
 
-// Database types
 export interface PortfolioProfile {
-  id?: string;
+  id?: number;
   username: string;
-  converted_resume: any;
-  portfolio_data: any;
+  converted_resume: ConvertedResume;
+  portfolio_data?: any;
   role_key: string;
   created_at?: string;
   updated_at?: string;
 }
 
-// Database operations
-export async function savePortfolioProfile(profile: Omit<PortfolioProfile, 'id' | 'created_at' | 'updated_at'>) {
+export interface SupabaseResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+// Check if Supabase is properly configured
+export function isSupabaseConfigured(): boolean {
+  return !!(supabaseUrl && supabaseKey && supabase);
+}
+
+// Save or update portfolio profile
+export async function savePortfolioProfile(profile: Omit<PortfolioProfile, 'id' | 'created_at' | 'updated_at'>): Promise<SupabaseResponse<PortfolioProfile>> {
   if (!supabase) {
-    return { success: false, error: 'Supabase not configured' };
+    return {
+      success: false,
+      error: 'Supabase not configured'
+    };
   }
 
   try {
-    const { data, error } = await supabase
+    // Check if user already exists
+    const { data: existing, error: checkError } = await supabase
       .from('portfolio_profiles')
-      .upsert({
-        ...profile,
-        updated_at: new Date().toISOString(),
-      }, { 
-        onConflict: 'username',
-        ignoreDuplicates: false 
-      })
-      .select()
+      .select('id')
+      .eq('username', profile.username)
       .single();
 
-    if (error) throw error;
-    return { success: true, data };
+    let result;
+    
+    if (existing) {
+      // Update existing profile
+      result = await supabase
+        .from('portfolio_profiles')
+        .update({
+          converted_resume: profile.converted_resume,
+          portfolio_data: profile.portfolio_data,
+          role_key: profile.role_key,
+          updated_at: new Date().toISOString()
+        })
+        .eq('username', profile.username)
+        .select()
+        .single();
+    } else {
+      // Insert new profile
+      result = await supabase
+        .from('portfolio_profiles')
+        .insert({
+          username: profile.username,
+          converted_resume: profile.converted_resume,
+          portfolio_data: profile.portfolio_data,
+          role_key: profile.role_key
+        })
+        .select()
+        .single();
+    }
+
+    if (result.error) {
+      console.error('Supabase save error:', result.error);
+      return {
+        success: false,
+        error: result.error.message
+      };
+    }
+
+    return {
+      success: true,
+      data: result.data
+    };
+
   } catch (error) {
-    console.error('Error saving portfolio profile:', error);
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    console.error('Portfolio save error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
   }
 }
 
-export async function getPortfolioProfile(username: string) {
+// Get portfolio profile by username
+export async function getPortfolioProfile(username: string): Promise<SupabaseResponse<PortfolioProfile>> {
   if (!supabase) {
-    return { success: false, error: 'Supabase not configured' };
+    return {
+      success: false,
+      error: 'Supabase not configured'
+    };
   }
 
   try {
@@ -63,21 +116,78 @@ export async function getPortfolioProfile(username: string) {
 
     if (error) {
       if (error.code === 'PGRST116') {
-        return { success: false, error: 'Portfolio not found' };
+        // No rows returned
+        return {
+          success: false,
+          error: 'Portfolio not found'
+        };
       }
-      throw error;
+      
+      console.error('Supabase get error:', error);
+      return {
+        success: false,
+        error: error.message
+      };
     }
 
-    return { success: true, data };
+    return {
+      success: true,
+      data
+    };
+
   } catch (error) {
-    console.error('Error fetching portfolio profile:', error);
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    console.error('Portfolio fetch error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
   }
 }
 
-export async function deletePortfolioProfile(username: string) {
+// Get all portfolio profiles (for admin/analytics)
+export async function getAllPortfolioProfiles(): Promise<SupabaseResponse<PortfolioProfile[]>> {
   if (!supabase) {
-    return { success: false, error: 'Supabase not configured' };
+    return {
+      success: false,
+      error: 'Supabase not configured'
+    };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('portfolio_profiles')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Supabase get all error:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+
+    return {
+      success: true,
+      data: data || []
+    };
+
+  } catch (error) {
+    console.error('Portfolio fetch all error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+// Delete portfolio profile
+export async function deletePortfolioProfile(username: string): Promise<SupabaseResponse> {
+  if (!supabase) {
+    return {
+      success: false,
+      error: 'Supabase not configured'
+    };
   }
 
   try {
@@ -86,15 +196,95 @@ export async function deletePortfolioProfile(username: string) {
       .delete()
       .eq('username', username.toLowerCase());
 
-    if (error) throw error;
-    return { success: true };
+    if (error) {
+      console.error('Supabase delete error:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+
+    return {
+      success: true
+    };
+
   } catch (error) {
-    console.error('Error deleting portfolio profile:', error);
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    console.error('Portfolio delete error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
   }
 }
 
-// Check if Supabase is properly configured
-export function isSupabaseConfigured(): boolean {
-  return !!(supabaseUrl && supabaseAnonKey && supabase);
+// Initialize database (create tables if they don't exist)
+export async function initializeDatabase(): Promise<SupabaseResponse> {
+  if (!supabase) {
+    return {
+      success: false,
+      error: 'Supabase not configured'
+    };
+  }
+
+  try {
+    // Check if table exists by trying to select from it
+    const { error } = await supabase
+      .from('portfolio_profiles')
+      .select('id')
+      .limit(1);
+
+    if (error && error.code === '42P01') {
+      // Table doesn't exist - this should be handled by Supabase migrations
+      return {
+        success: false,
+        error: 'Database table not found. Please run database migrations.'
+      };
+    }
+
+    return {
+      success: true
+    };
+
+  } catch (error) {
+    console.error('Database initialization error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+// Health check for Supabase connection
+export async function healthCheck(): Promise<SupabaseResponse> {
+  if (!supabase) {
+    return {
+      success: false,
+      error: 'Supabase not configured'
+    };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('portfolio_profiles')
+      .select('count', { count: 'exact' });
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+
+    return {
+      success: true,
+      data: { count: data }
+    };
+
+  } catch (error) {
+    console.error('Supabase health check error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
 }
