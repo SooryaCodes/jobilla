@@ -97,15 +97,19 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 ### Project Documentation
 For Software:
 
-# Screenshots (Add at least 3)
-![Screenshot1](https://via.placeholder.com/800x400?text=Resume+Converter+Demo)
-*Main landing page with file upload interface and role selection*
+# Screenshots
 
-![Screenshot2](https://via.placeholder.com/800x600?text=Portfolio+Demo)
-*Generated portfolio page showing transformed professional identity*
+![Landing Page](./public/Screenshot%202025-08-09%20155907.png)
+*Main landing page with beautiful animations and file upload interface*
 
-![Screenshot3](https://via.placeholder.com/800x500?text=Resume+Output+Demo)
-*AI-generated resume with humorous role-specific transformations*
+![Role Selection](./public/Screenshot%202025-08-09%20155914.png)
+*Interactive role selection with Kerala-themed job options*
+
+![Resume Conversion](./public/Screenshot%202025-08-09%20155927.png)
+*AI-powered resume conversion with professional PDF output and portfolio generation*
+
+![Portfolio Page](./public/Screenshot%202025-08-09%20155938.png)
+*Generated portfolio page showcasing the transformed professional identity with role-specific theming*
 
 # Diagrams
 ![Workflow](https://via.placeholder.com/1000x600?text=System+Architecture+Diagram)
